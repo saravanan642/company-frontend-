@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const createcompany = require("../Controller/company")
+const {createdata, fetchcompanyData} = require("../Controller/company")
 
-router.post("/create-form",createcompany)
-
+router.post("/create-form",createdata)
+router.get("/fetch-companydata",fetchcompanyData)
 
 module.exports =router;

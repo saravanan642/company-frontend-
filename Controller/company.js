@@ -29,11 +29,34 @@ const createdata = async (req, res) => {
         });
         return res.json({success: true , message :"Account created successfully",save})
 
-
     } catch (err) {
         console.log(err.message)
         console.log("Erro in the server ")
+    }
+};   
+
+const fetchcompanyData = async (req, res) => {
+    try {
+
+        const companydata = await companySchema.find({})
+        if (!companydata || companydata.length === 0) {
+            return res.json({ success: false, message: "Company data not found" })
+        }
+
+        return res.json({
+            success: true,
+            message: "Company data is successfully fetched",
+            data: companydata
+        })
 
     }
+    catch (err) {
+        console.log(err)
+        console.log("Error in the fetch data")
+    }
 }
-module.exports = createdata;
+
+module.exports = {
+    createdata,
+    fetchcompanyData
+}
