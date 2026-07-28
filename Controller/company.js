@@ -3,7 +3,7 @@ const companySchema = require("../Models/companymodels")
 const createdata = async (req, res) => {
     try {
         const { companyName, companyCode, logo, favicon, domain, website, email, mobile, address, primaryColor, secondaryColor, plan, status, } = req.body;
-        if (!companyName || !companyCode || !logo || !favicon || !domain || !website || !mobile || !address || !primaryColor || !secondaryColor ) {
+        if (!companyName || !companyCode || !logo || !favicon || !domain || !website || !mobile || !address || !primaryColor || !secondaryColor) {
             return res.json({ success: false, message: "All fileds are require " });
         }
         const Existing = await companySchema.findOne({ email, mobile, address })
@@ -27,13 +27,13 @@ const createdata = async (req, res) => {
             plan,
             status
         });
-        return res.json({success: true , message :"Account created successfully",save})
+        return res.json({ success: true, message: "Account created successfully", save })
 
     } catch (err) {
         console.log(err.message)
         console.log("Erro in the server ")
     }
-};   
+};
 
 const fetchcompanyData = async (req, res) => {
     try {
@@ -56,7 +56,66 @@ const fetchcompanyData = async (req, res) => {
     }
 }
 
+
+const Deleteform = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletelist = await companySchema.findByIdAndDelete(id);
+
+        if (!deletelist) {
+            return res.json({
+                success: false,
+                message: "Data not found"
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: "Company data deleted successfully",
+            data: deletelist
+        });
+
+    } catch (err) {
+        console.log(err);
+
+        return res.json({
+            success: false,
+            message: "Error deleting company"
+        });
+    }
+};
+
+const updatedata = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const updatelist = await companySchema.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true }
+        );
+
+        if (!updatelist) {
+            return res.json({ success: false, message: "update is not found" });
+        }
+
+        return res.json({
+            success: true,
+            message: "update successfully"
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            success: false,
+            message: "Error in the update data list"
+        });
+    }
+}
 module.exports = {
     createdata,
-    fetchcompanyData
+    fetchcompanyData,
+    Deleteform, 
+    updatedata
 }
