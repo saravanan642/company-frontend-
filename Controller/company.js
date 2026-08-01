@@ -61,7 +61,11 @@ const Deleteform = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const deletelist = await companySchema.findByIdAndDelete(id);
+        if(!id){
+            return send.json({success : false , message : ""})
+        }
+
+        const deletelist = await companySchema.findOne({_id : id});
 
         if (!deletelist) {
             return res.json({
@@ -69,6 +73,15 @@ const Deleteform = async (req, res) => {
                 message: "Data not found"
             });
         }
+
+        const isDeleteUser = await companySchema.deleteOne({_id : deletelist._id })
+
+
+
+
+
+
+
 
         return res.json({
             success: true,
@@ -90,6 +103,17 @@ const updatedata = async (req, res) => {
     try {
         const { id } = req.params;
 
+        if(!id){
+            return res.json({success : false , message  : ""})
+        }
+        return res.json({sucess : true,  message : " "})
+
+        const {email, name , mobile } = req.body
+           if(!email || !name || !mobile ){
+            return res.json ({success : false, mesage  : ""})
+           }
+           return res.json({sucess : true, message : ""})
+           
         const updatelist = await companySchema.findByIdAndUpdate(
             id,
             req.body,
