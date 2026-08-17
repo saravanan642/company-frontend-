@@ -61,28 +61,12 @@ const Deleteform = async (req, res) => {
     try {
         const { id } = req.params;
 
-        if(!id){
-            return send.json({success : false , message : ""})
-        }
-
-        const deletelist = await companySchema.findOne({_id : id});
-
         if (!deletelist) {
             return res.json({
                 success: false,
                 message: "Data not found"
             });
         }
-
-        const isDeleteUser = await companySchema.deleteOne({_id : deletelist._id })
-
-
-
-
-
-
-
-
         return res.json({
             success: true,
             message: "Company data deleted successfully",
@@ -98,45 +82,64 @@ const Deleteform = async (req, res) => {
         });
     }
 };
-
 const updatedata = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { data } = req.body;
 
-        if(!id){
-            return res.json({success : false , message  : ""})
+        if (data && data.Id) {
+
+            const existingData = await companySchema.findOne({
+                Id: data.Id
+            });
+
+            if (existingData) {
+
+                const updated = await companySchema.updateOne(
+                    { Id: data.Id },
+                    {
+                        $set: {
+                            Name: data.Name,
+                            Contact: data.Contact,
+                            Email: data.Email
+                        }
+                    }
+                );
+
+                if (updated) {
+                    return res.json({
+                        success: true,
+                        message: "Data updated successfully"
+                    });
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No updates were made"
+                    });
+                }
+
+            } else {
+                return res.json({
+                    success: false,
+                    message: "Data not found"
+                });
+            }
+
+        } else {
+            return res.json({
+                success: false,
+                message: "Invalid data provided"
+            });
         }
-        return res.json({sucess : true,  message : " "})
-
-        const {email, name , mobile } = req.body
-           if(!email || !name || !mobile ){
-            return res.json ({success : false, mesage  : ""})
-           }
-           return res.json({sucess : true, message : ""})
-           
-        const updatelist = await companySchema.findByIdAndUpdate(
-            id,
-            req.body,
-            { new: true }
-        );
-
-        if (!updatelist) {
-            return res.json({ success: false, message: "update is not found" });
-        }
-
-        return res.json({
-            success: true,
-            message: "update successfully"
-        });
 
     } catch (err) {
         console.log(err);
+
         return res.json({
             success: false,
             message: "Error in the update data list"
         });
     }
-}
+};
 module.exports = {
     createdata,
     fetchcompanyData,
