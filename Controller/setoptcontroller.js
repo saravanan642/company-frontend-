@@ -1,4 +1,5 @@
 const setopt = require("../Models/setoptSchema")
+const UserModel = require("../Models/User")
 
 const sendOTP = async (req, res) => {
     try {
@@ -9,14 +10,14 @@ const sendOTP = async (req, res) => {
             return res.json({ success: false, message: "Email are required please provide" })
         }
 
-        const isUSer = await UserModel.findOne({ email })
+        const userEmail = email.toLowerCase();
+
+        const isUSer = await UserModel.findOne({ email : userEmail })
 
         if (!isUSer) {
             return res.json({ success: false, message: "Alrady account exitx please sigin" })
-        } else {
-            email.toLowerCase() == Email.toLowerCase()
-            return res.json({ success: false, message: "Company already registered" });
         }
+
         const otp = Math.floor(100000 + Math.random() * 900000);
 
         const expiry = new Date(Date.now() + 5 * 60 * 1000)
@@ -24,10 +25,19 @@ const sendOTP = async (req, res) => {
         if (!expiry) {
             return res.json({ success: false, message: "OTP expired. Please request a new OTP." })
         }
-        return res.json({success : true , message : " "})
 
+        const updateOtp = await setopt.updateOne(
+            { email },
+            {
+                $set: { otp, expiresAt: expiry }
+            },
+            { upsert: true }
+        )
 
-
+        if (!updateOtp) {
+            return res.json({ success: false, message: "Failed to update OTP. Please try again." })
+        }
+        return res.json({ success: true, messgae: " OTP send successfully ",save })
 
 
     }
@@ -35,3 +45,4 @@ const sendOTP = async (req, res) => {
         console.log("Error in send otp")
     }
 }
+module.exports = sendOTP;
